@@ -42,7 +42,7 @@
 					{foreach item=FIELD from=$FIELDS[0]}
 						<th colspan="{$FIELD->get('colspan')}">
 							<span class="inventoryLineItemHeader">{vtranslate($FIELD->get('label'), $MODULE)}</span>&nbsp;&nbsp;
-							{assign var="FIELD_TPL_NAME" value="innventoryFields/"|cat:$FIELD->getTemplateName('EditView',$MODULE)}
+							{assign var="FIELD_TPL_NAME" value="inventoryfields/"|cat:$FIELD->getTemplateName('EditView',$MODULE)}
 							{include file=$FIELD_TPL_NAME|@vtemplate_path:$MODULE ITEM_VALUE=$INVENTORY_ROWS[0][$FIELD->get('columnname')]}
 						</th>
 					{/foreach}
@@ -70,7 +70,7 @@
 					<td class="hideTd" style="min-width: 50px">&nbsp;&nbsp;</td>
 					{foreach item=FIELD from=$FIELDS[1]}
 						<td colspan="{$FIELD->get('colspan')}" class="col{$FIELD->getName()}{if !$FIELD->isVisible($INVENTORY_ROWS)} hide{/if} textAlignRight 
-							{if !$FIELD->isSummary()}hideTd{else}wisableTd{/if}" data-sumfield="{lcfirst($FIELD->get('invtype'))}">
+							{if !$FIELD->isSummary()} hideTd{else} wisableTd{/if}" data-sumfield="{lcfirst($FIELD->get('invtype'))}">
 							{if $FIELD->isSummary()}
 								{assign var="SUM" value=0}
 								{foreach key=KEY item=ITEM_VALUE from=$INVENTORY_ROWS}

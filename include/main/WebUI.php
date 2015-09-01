@@ -224,7 +224,6 @@ class Vtiger_WebUI extends Vtiger_EntryPoint
 			}
 		} catch (AppException $e) {
 			$log = vglobal('log');
-			$request = new Vtiger_Request($_REQUEST);
 			if (!$request->isAjax()) {
 				// Log for developement.
 				$log->error($e->getMessage() . ' => ' . $e->getFile() . ':' . $e->getLine());

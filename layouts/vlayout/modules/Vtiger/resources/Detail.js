@@ -7,7 +7,6 @@
  * All Rights Reserved.
  * Contributor(s): YetiForce.com
  *************************************************************************************/
-
 jQuery.Class("Vtiger_Detail_Js", {
 	detailInstance: false,
 	SaveResultInstance: false,
@@ -345,7 +344,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 	loadWidget: function (widgetContainer) {
 		var thisInstance = this;
 		var aDeferred = jQuery.Deferred();
-		var contentHeader = jQuery('.widget_header', widgetContainer);
+		var contentHeader = jQuery('.widget_header,.widgetHeader', widgetContainer);
 		var contentContainer = jQuery('.widget_contents', widgetContainer);
 		var urlParams = widgetContainer.data('url');
 		var relatedModuleName = contentHeader.find('[name="relatedModule"]').val();
@@ -499,6 +498,8 @@ jQuery.Class("Vtiger_Detail_Js", {
 		params.dataType = 'json';
 		AppConnector.request(params).then(
 				function (reponseData) {
+					var readRecord = jQuery('.setReadRecord');
+					readRecord.closest('.btn-group').removeClass('hide');
 					aDeferred.resolve(reponseData);
 				}
 		);
@@ -976,6 +977,8 @@ jQuery.Class("Vtiger_Detail_Js", {
 	 */
 	ajaxEditHandling: function (currentTdElement) {
 		var thisInstance = this;
+		var readRecord = jQuery('.setReadRecord');
+		readRecord.prop('disabled', true);
 		var detailViewValue = jQuery('.value', currentTdElement);
 		var editElement = jQuery('.edit', currentTdElement);
 		var actionElement = jQuery('.summaryViewEdit', currentTdElement);
@@ -1057,6 +1060,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 					editElement.addClass('hide');
 					detailViewValue.removeClass('hide');
 					actionElement.removeClass('hide');
+					readRecord.prop('disabled', false);
 					jQuery(document).off('click', '*', saveHandler);
 				} else {
 					var preFieldSaveEvent = jQuery.Event(thisInstance.fieldPreSave);
@@ -1065,6 +1069,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 						//Stop the save
 						saveTriggred = false;
 						preventDefault = true;
+						readRecord.prop('disabled', false);
 						return
 					}
 					preventDefault = false;
@@ -1082,6 +1087,8 @@ jQuery.Class("Vtiger_Detail_Js", {
 							detailViewValue.removeClass('hide');
 							actionElement.removeClass('hide');
 							jQuery(document).off('click', '*', saveHandler);
+							readRecord.prop('disabled', false);
+							fieldElement.val(previousValue);
 							return;
 						}
 					} else {
@@ -1100,6 +1107,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 					fieldNameValueMap["field"] = fieldName;
 					fieldNameValueMap = thisInstance.getCustomFieldNameValueMap(fieldNameValueMap);
 					thisInstance.saveFieldValues(fieldNameValueMap).then(function (response) {
+						readRecord.prop('disabled', false);
 						var postSaveRecordDetails = response.result;
 						currentTdElement.progressIndicator({'mode': 'hide'});
 						detailViewValue.removeClass('hide');
@@ -1135,6 +1143,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 					},
 							function (error) {
 								//TODO : Handle error
+								readRecord.prop('disabled', false);
 								currentTdElement.progressIndicator({'mode': 'hide'});
 							}
 					)
@@ -2190,7 +2199,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 		var thisInstance = this;
 		detailContentsHolder.on('click', '.setReadRecord', function (e) {
 			var currentElement = jQuery(e.currentTarget);
-			currentElement.hide();
+			currentElement.closest('.btn-group').addClass('hide');
 			jQuery('#Accounts_detailView_fieldValue_was_read').find('.value').text(app.vtranslate('LBL_YES'));
 			var params = {
 				'module': app.getModuleName(),
@@ -2453,15 +2462,154 @@ jQuery.Class("Vtiger_Detail_Js", {
 			recentCommentsTab.trigger('click');
 		});
 	},
+	registerMailPreviewWidget: function (container) {
+		var thisInstance = this;
+		container.on('click', '.showMailBody', function (e) {
+			var row = $(e.currentTarget).closest('.row');
+			var mailBody = row.find('.mailBody');
+			var mailTeaser = row.find('.mailTeaser');
+			var glyphicon = $(e.currentTarget).find('.glyphicon');
+			if (mailBody.hasClass('hide')) {
+				mailBody.removeClass('hide');
+				mailTeaser.addClass('hide');
+				glyphicon.removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
+			} else {
+				mailBody.addClass('hide');
+				mailTeaser.removeClass('hide');
+				glyphicon.removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
+			}
+		});
+		container.find('[name="mail-type"]').change(function (e) {
+			thisInstance.loadMailPreviewWidget(container);
+		});
+		container.find('[name="mailFilter"]').change(function (e) {
+			thisInstance.loadMailPreviewWidget(container);
+		});
+		container.on('click', '.showMailsModal', function (e) {
+			var url = $(e.currentTarget).data('url');
+			url += '&type=' + container.find('[name="mail-type"]').val();
+			if (container.find('[name="mailFilter"]').length > 0) {
+				url += '&mailFilter=' + container.find('[name="mailFilter"]').val();
+			}
+			var progressIndicatorElement = jQuery.progressIndicator();
+			app.showModalWindow("", url, function (data) {
+				progressIndicatorElement.progressIndicator({'mode': 'hide'});
+				thisInstance.registerMailPreviewWidget(data);
+				data.find('.expandAllMails').click();
+				data.find('.showMailModal').click(function (e) {
+					var progressIndicatorElement = jQuery.progressIndicator();
+					app.showModalWindow("", $(e.currentTarget).data('url'), function () {
+						progressIndicatorElement.progressIndicator({'mode': 'hide'});
+					});
+				});
+			});
+		});
+		container.find('.expandAllMails').click(function (e) {
+			container.find('.mailBody').removeClass('hide');
+			container.find('.mailTeaser').addClass('hide');
+			container.find('.showMailBody .glyphicon').removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
+		});
+		container.find('.collapseAllMails').click(function (e) {
+			container.find('.mailBody').addClass('hide');
+			container.find('.mailTeaser').removeClass('hide');
+			container.find('.showMailBody .glyphicon').removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
+		});
+		container.find('.widget_contents').on(thisInstance.widgetPostLoad, function (e, widgetName) {
+			container.find('.showMailModal').click(function (e) {
+				var progressIndicatorElement = jQuery.progressIndicator();
+				app.showModalWindow("", $(e.currentTarget).data('url'), function () {
+					progressIndicatorElement.progressIndicator({'mode': 'hide'});
+				});
+			});
+		});
+		container.find('.sendMailBtn').click(function (e) {
+			var sendButton = jQuery(e.currentTarget);
+			var url = sendButton.data("url");
+			var mod = sendButton.data("mod");
+			var record = sendButton.data("record");
+			var popup = sendButton.data("popup");
+			if (mod == 'Contacts' || mod == 'Leads' || mod == 'Accounts') {
+				var params = {};
+				var resp = {};
+				params.data = {module: 'OSSMail', action: 'getContactMail', mod: mod, ids: record}
+				params.async = false;
+				params.dataType = 'json';
+				AppConnector.request(params).then(
+						function (response) {
+							resp = response['result'];
+							if (resp.length > 1) {
+								var getConfig = jQuery.ajax({
+									type: "GET",
+									async: false,
+									url: 'index.php?module=OSSMail&view=selectEmail',
+									data: {resp: resp}
+								});
+								var callback = function (container) {
+									$('#sendEmailContainer #selectEmail').click(function (e) {
+										url += '&to=' + $('input[name=selectedFields]:checked').val();
+										thisInstance.sendMailWindow(url, popup);
+									});
+								}
+								getConfig.done(function (cfg) {
+									var data = {}
+									data.css = {'width': '700px'};
+									data.cb = callback;
+									data.data = cfg;
+									app.showModalWindow(data);
+								});
+							}
+							if (resp.length == 1) {
+								url += '&to=' + resp[0].email;
+								thisInstance.sendMailWindow(url, popup);
+							}
+							if (resp.length == 0) {
+								thisInstance.sendMailWindow(url, popup);
+							}
+						}
+				);
+			} else {
+				thisInstance.sendMailWindow(url, popup);
+			}
+		});
+	},
+	sendMailWindow: function (url, popup) {
+		if (popup) {
+			window.open(url, '_blank', 'resizable=yes,location=no,scrollbars=yes,toolbar=no,menubar=no,status=no');
+		} else {
+			window.location.href = url;
+		}
+	},
+	loadMailPreviewWidget: function (widgetContent) {
+		var thisInstance = this;
+		var widgetDataContainer = widgetContent.find('.widget_contents');
+		var recordId = $('#recordId').val();
+		var progress = widgetDataContainer.progressIndicator();
+		var params = {};
+		params['module'] = 'OSSMailView';
+		params['view'] = 'widget';
+		params['smodule'] = $('#module').val();
+		params['srecord'] = recordId;
+		params['mode'] = 'showEmailsList';
+		params['type'] = $('[name="mail-type"]').val();
+		params['mailFilter'] = $('[name="mailFilter"]').val();
+		AppConnector.request(params).then(
+				function (data) {
+					widgetDataContainer.html(data);
+					widgetDataContainer.trigger(thisInstance.widgetPostLoad, {widgetName: 'Emails'})
+					progress.progressIndicator({'mode': 'hide'});
+				}
+		);
+	},
 	registerBasicEvents: function () {
 		var thisInstance = this;
 		var detailContentsHolder = thisInstance.getContentHolder();
 		//register all the events for summary view container
-		this.registerSummaryViewContainerEvents(detailContentsHolder);
+		thisInstance.registerSummaryViewContainerEvents(detailContentsHolder);
 		thisInstance.registerCommentEvents(detailContentsHolder);
 		app.registerEventForDatePickerFields(detailContentsHolder);
 		//Attach time picker event to time fields
 		app.registerEventForTimeFields(detailContentsHolder);
+
 		detailContentsHolder.on('click', '#detailViewNextRecordButton', function (e) {
 			var selectedTabElement = thisInstance.getSelectedTab();
 			var url = selectedTabElement.data('url');
@@ -2562,7 +2710,6 @@ jQuery.Class("Vtiger_Detail_Js", {
 			);
 		});
 
-
 		detailContentsHolder.on('click', '.moreRecentDocuments', function () {
 			var recentDocumentsTab = thisInstance.getTabByLabel(thisInstance.detailViewRecentDocumentsTabLabel);
 			recentDocumentsTab.trigger('click');
@@ -2573,7 +2720,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 			recentActivitiesTab.trigger('click');
 		});
 
-		detailContentsHolder.on('switchChange.bootstrapSwitch', '.relatedContainer .switchBtn', function (e, state) {
+		detailContentsHolder.off('switchChange.bootstrapSwitch').on('switchChange.bootstrapSwitch', '.relatedContainer .switchBtn', function (e, state) {
 			var recentActivitiesTab = thisInstance.getTabByLabel(thisInstance.detailViewRecentActivitiesTabLabel);
 			var url = recentActivitiesTab.data('url');
 			url = url.replace('&time=current', '');
@@ -2588,6 +2735,8 @@ jQuery.Class("Vtiger_Detail_Js", {
 		});
 		thisInstance.registerEventForRelatedList();
 		thisInstance.registerEventForRelatedListPagination();
+		thisInstance.registerBlockAnimationEvent();
+		thisInstance.registerMailPreviewWidget(detailContentsHolder.find('.widgetContentBlock[data-type="EmailList"]'));
 	},
 	registerEvents: function () {
 		var thisInstance = this;
@@ -2596,7 +2745,6 @@ jQuery.Class("Vtiger_Detail_Js", {
 		thisInstance.registerSendSmsSubmitEvent();
 		thisInstance.registerAjaxEditEvent();
 		this.registerRelatedRowClickEvent();
-		this.registerBlockAnimationEvent();
 		this.registerBlockStatusCheckOnLoad();
 		this.registerEmailFieldClickEvent();
 		this.registerPhoneFieldClickEvent();
@@ -2618,7 +2766,7 @@ jQuery.Class("Vtiger_Detail_Js", {
 		this.registerSetReadRecord(detailViewContainer);
 		thisInstance.registerEventForPicklistDependencySetup(thisInstance.getForm());
 
-		thisInstance.getForm().validationEngine(app.validationEngineOptions);
+		thisInstance.getForm().validationEngine(app.validationEngineOptionsForRecord);
 		thisInstance.loadWidgets();
 
 		app.registerEventForTextAreaFields(jQuery('.commentcontent'));

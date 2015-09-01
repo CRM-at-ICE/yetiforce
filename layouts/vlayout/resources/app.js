@@ -7,7 +7,6 @@
  * All Rights Reserved.
  * Contributor(s): YetiForce.com
  *************************************************************************************/
-
 var app = {
 	/**
 	 * variable stores client side language strings
@@ -101,7 +100,8 @@ var app = {
 		var moduleName = app.getModuleName();
 		if (selectElement.filter('[multiple]') && moduleName != 'Install') {
 			params.placeholder_text_multiple = ' ' + app.vtranslate('JS_SELECT_SOME_OPTIONS');
-		} else if (moduleName != 'Install') {
+		}
+		if (moduleName != 'Install') {
 			params.placeholder_text_single = ' ' + app.vtranslate('JS_SELECT_AN_OPTION');
 		}
 		selectElement.chosen(params);
@@ -209,7 +209,9 @@ var app = {
 					if (selectElementNew.data('unselecting')) {
 						selectElementNew.removeData('unselecting');
 						setTimeout(function (e) {
-							selectElementNew.select2('close');
+							selectElementNew.each(function () {
+								jQuery(this).select2('close');
+							});
 						}, 1);
 					}
 					var element = jQuery(e.currentTarget);

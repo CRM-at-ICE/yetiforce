@@ -21,7 +21,7 @@ class Vtiger_Module_Model extends Vtiger_Module
 	protected $moduleMeta = false;
 	protected $fields = false;
 	protected $relations = null;
-	protected $moduleType = 'Basic';
+	protected $moduleType = '0';
 
 	/**
 	 * Function to get the Module/Tab id

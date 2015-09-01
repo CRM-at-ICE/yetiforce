@@ -5,6 +5,7 @@
  * The Initial Developer of the Original Code is vtiger.
  * Portions created by vtiger are Copyright (C) vtiger.
  * All Rights Reserved.
+ * Contributor(s): YetiForce.com
  *************************************************************************************/
 jQuery.Class("Vtiger_Field_Js", {
 	/**
@@ -281,7 +282,6 @@ Vtiger_Field_Js('Vtiger_Currency_Field_Js', {}, {
 	}
 });
 
-
 Vtiger_Field_Js('Vtiger_Owner_Field_Js', {}, {
 	/**
 	 * Function to get the picklist values
@@ -314,6 +314,14 @@ Vtiger_Field_Js('Vtiger_Owner_Field_Js', {}, {
 	}
 })
 
+Vtiger_Multipicklist_Field_Js('Vtiger_Sharedowner_Field_Js', {}, {
+})
+
+Vtiger_Picklist_Field_Js('Vtiger_Tree_Field_Js', {}, {
+})
+
+Vtiger_Picklist_Field_Js('Vtiger_Modules_Field_Js', {}, {
+})
 
 Vtiger_Date_Field_Js('Vtiger_Datetime_Field_Js', {}, {
 });
@@ -321,7 +329,7 @@ Vtiger_Date_Field_Js('Vtiger_Datetime_Field_Js', {}, {
 Vtiger_Picklist_Field_Js('Vtiger_Taxs_Field_Js', {}, {
 });
 
-Vtiger_Picklist_Field_Js('Vtiger_SuppliesLimit_Field_Js', {}, {
+Vtiger_Picklist_Field_Js('Vtiger_InventoryLimit_Field_Js', {}, {
 });
 Vtiger_Field_Js('Vtiger_Time_Field_Js', {}, {
 	/**

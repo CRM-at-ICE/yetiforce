@@ -1945,6 +1945,9 @@ class CRMEntity
 		if ($queryPlanner->requireTable('vtiger_lastModifiedBy' . $module)) {
 			$query .= " left join vtiger_users as vtiger_lastModifiedBy" . $module . " on vtiger_lastModifiedBy" . $module . ".id = vtiger_crmentity.modifiedby";
 		}
+		if ($queryPlanner->requireTable('vtiger_createdby' . $module)) {
+			$query .= " left join vtiger_users as vtiger_createdby" . $module . " on vtiger_createdby" . $module . ".id = vtiger_crmentity.smcreatorid";
+		}
 
 		// TODO Optimize the tables below based on requirement
 		$query .= "	left join vtiger_groups on vtiger_groups.groupid = vtiger_crmentity.smownerid";
@@ -2056,6 +2059,9 @@ class CRMEntity
 		}
 		if ($queryPlanner->requireTable("vtiger_lastModifiedBy$secmodule")) {
 			$query .= " left join vtiger_users as vtiger_lastModifiedBy" . $secmodule . " on vtiger_lastModifiedBy" . $secmodule . ".id = vtiger_crmentity" . $secmodule . ".modifiedby";
+		}
+		if ($queryPlanner->requireTable("vtiger_createdby$secmodule")) {
+			$query .= " left join vtiger_users as vtiger_createdby" . $secmodule . " on vtiger_createdby" . $secmodule . ".id = vtiger_crmentity" . $secmodule . ".modifiedby";
 		}
 
 		// Add the pre-joined relation table query
@@ -2401,19 +2407,22 @@ class CRMEntity
 		require('user_privileges/sharing_privileges_' . $current_user->id . '.php');
 		global $shared_owners;
 		$is_admin = is_admin($current_user);
-		$securityParameter == '';
+		$sharedParameter = $securityParameter = '';
 		$query = '';
 		$tabId = getTabid($module);
 
 		if ($is_admin == false && $profileGlobalPermission[1] == 1 && $profileGlobalPermission[2] == 1 && $defaultOrgSharingPermission[$tabId] == 3) {
 			$securityParameter = $this->getUserAccessConditionsQuery($module, $current_user);
-			$sharedParameter = "FIND_IN_SET( " . $current_user->id . ", vtiger_crmentity.shownerid )";
+			foreach (array_merge([$current_user->id], $current_user_groups) as $id) {
+				$sharedParameter .= ' OR FIND_IN_SET( ' . $id . ', vtiger_crmentity.shownerid )';
+			}
+			$sharedParameter = trim($sharedParameter, ' OR');
 		}
 		if ($shared_owners == true) {
 			if ($securityParameter != '') {
 				$query .= " AND ( ($securityParameter) OR ($sharedParameter) )";
 			} elseif ($sharedParameter != '') {
-				$query .= " AND " . $sharedParameter;
+				$query .= ' AND (' . $sharedParameter . ')';
 			}
 		} else {
 			$query .= $securityParameter;
