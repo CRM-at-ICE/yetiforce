@@ -10,7 +10,7 @@
  ********************************************************************************/
 -->*}
 
-<table width="100%" cellspacing="0" cellpadding="10" class="importContents">
+<table width="100%" cellspacing="0" cellpadding="10" class="table importContents">
 	<tr>
 		<td>
 			<strong>{'LBL_IMPORT_STEP_4'|@vtranslate:$MODULE}:</strong>
@@ -60,9 +60,15 @@
 								{assign var="_TRANSLATED_FIELD_LABEL" value=$_FIELD_INFO->getFieldLabelKey()|@vtranslate:$FOR_MODULE}
 								<option value="{$_FIELD_NAME}" {if decode_html($_HEADER_NAME) eq $_TRANSLATED_FIELD_LABEL} selected {/if} data-label="{$_TRANSLATED_FIELD_LABEL}">{$_TRANSLATED_FIELD_LABEL}{if $_FIELD_INFO->isMandatory() eq 'true'}&nbsp; (*){/if}</option>
 								{/foreach}
+								{if $MODULE_MODEL->isInventory()}
+									{foreach key=_FIELD_NAME item=_FIELD_INFO from=$INVENTORY_FIELDS}
+										{assign var="_TRANSLATED_FIELD_LABEL" value=$_FIELD_INFO->get('label')|@vtranslate:$FOR_MODULE}
+										<option value="{$_FIELD_NAME}" {if decode_html($_HEADER_NAME) eq $_TRANSLATED_FIELD_LABEL} selected {/if} data-label="{$_TRANSLATED_FIELD_LABEL}">{$_TRANSLATED_FIELD_LABEL}{if $_FIELD_INFO->isMandatory() eq 'true'}&nbsp; (*){/if}</option>
+									{/foreach}
+								{/if}
 							</select>
 						</td>
-						<td class="cellLabel row-fluid" name="default_value_container">&nbsp;</td>
+						<td class="cellLabel row" name="default_value_container">&nbsp;</td>
 					</tr>
 					{/foreach}
 			</tbody>
@@ -71,9 +77,15 @@
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-        <td align="right" colspan="2">
-            <input type="checkbox" name="save_map" id="save_map"/>&nbsp;{'LBL_SAVE_AS_CUSTOM_MAPPING'|@vtranslate:$MODULE}&nbsp;&nbsp;
-            <input type="text" name="save_map_as" id="save_map_as"/>
+		<td align="right" colspan="2">
+			<div class="row">
+				<div class="col-xs-8">
+					<input type="checkbox" title="{'LBL_SAVE_AS_CUSTOM_MAPPING'|@vtranslate:$MODULE}" name="save_map" id="save_map"/>&nbsp;{'LBL_SAVE_AS_CUSTOM_MAPPING'|@vtranslate:$MODULE}&nbsp;&nbsp;
+				</div>
+				<div class="col-xs-4">
+					<input class="form-control" type="text" name="save_map_as" id="save_map_as"/>
+				</div>
+			</div>
 		</td>
 	</tr>
 </table>

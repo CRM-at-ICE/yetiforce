@@ -60,8 +60,8 @@ class Vtiger_Import_View extends Vtiger_Index_View {
 	 * @param Vtiger_Request $request
 	 * @return <Array> - List of Vtiger_JsScript_Model instances
 	 */
-	function getHeaderScripts(Vtiger_Request $request) {
-		$headerScriptInstances = parent::getHeaderScripts($request);
+	function getFooterScripts(Vtiger_Request $request) {
+		$headerScriptInstances = parent::getFooterScripts($request);
 
 		$jsFileNames = array(
 			'modules.Import.resources.Import'
@@ -82,7 +82,8 @@ class Vtiger_Import_View extends Vtiger_Index_View {
 
 		$viewer->assign('FOR_MODULE', $moduleName);
 		$viewer->assign('MODULE', 'Import');
-		$viewer->assign('SUPPORTED_FILE_TYPES', Import_Utils_Helper::getSupportedFileExtensions());
+		$viewer->assign('SUPPORTED_FILE_TYPES', Import_Utils_Helper::getSupportedFileExtensions($moduleName));
+		$viewer->assign('SUPPORTED_FILE_TYPES_TEXT', Import_Utils_Helper::getSupportedFileExtensionsDescription($moduleName));
 		$viewer->assign('SUPPORTED_FILE_ENCODING', Import_Utils_Helper::getSupportedFileEncoding());
 		$viewer->assign('SUPPORTED_DELIMITERS', Import_Utils_Helper::getSupportedDelimiters());
 		$viewer->assign('AUTO_MERGE_TYPES', Import_Utils_Helper::getAutoMergeTypes());
@@ -130,8 +131,12 @@ class Vtiger_Import_View extends Vtiger_Index_View {
 			$moduleName = $request->getModule();
 			$moduleModel = Vtiger_Module_Model::getInstance($moduleName);
 			$moduleMeta = $moduleModel->getModuleMeta();
-
-
+			if($moduleModel->isInventory()){
+				$inventory = Vtiger_InventoryField_Model::getInstance($moduleName);
+				$fields = $inventory->getFields();
+				$viewer->assign('INVENTORY_FIELDS', $fields);
+			}
+			$viewer->assign('MODULE_MODEL', $moduleModel);
 			$viewer->assign('DATE_FORMAT', $user->date_format);
 			$viewer->assign('FOR_MODULE', $moduleName);
 			$viewer->assign('MODULE', 'Import');

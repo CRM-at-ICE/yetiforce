@@ -94,7 +94,12 @@ class Import_FileReader_Reader {
 		$tableName = Import_Utils_Helper::getDbTableName($this->user);
 		$fieldMapping = $this->request->get('field_mapping');
         $moduleFields = $this->moduleModel->getFields();
-        $columnsListQuery = 'id INT PRIMARY KEY AUTO_INCREMENT, temp_status INT DEFAULT 0, recordid INT';
+		if($this->moduleModel->isInventory()){
+			$inventory = Vtiger_InventoryField_Model::getInstance($this->request->get('module'));
+			$inventoryModuleFields = $inventory->getFields();
+			$moduleFields = array_merge($moduleFields, $inventoryModuleFields);
+		}
+		$columnsListQuery = 'id INT PRIMARY KEY AUTO_INCREMENT, temp_status INT DEFAULT 0, recordid INT';
 		$fieldTypes = $this->getModuleFieldDBColumnType();
 		foreach($fieldMapping as $fieldName => $index) {
             $fieldObject = $moduleFields[$fieldName];
@@ -119,14 +124,18 @@ class Import_FileReader_Reader {
 	 * @return <String> - column name with type for sql creation of table
 	 */	
     public function getDBColumnType($fieldObject,$fieldTypes){
+		
         $columnsListQuery = '';
-        $fieldName = $fieldObject->getName();
+		$fieldName = $fieldObject->get('columnname');
+		if(!$fieldName)
+			$fieldName = $fieldObject->getName();
+		
         $dataType = $fieldObject->getFieldDataType();
 		$skipDataType = array('reference','owner', 'currencyList', 'date', 'datetime');
-        if(in_array($dataType, $skipDataType)){
+        if(in_array($dataType, $skipDataType) || $dataType == null){
             $columnsListQuery .= ','.$fieldName.' varchar(250)';
         } else {
-            $columnsListQuery .= ','.$fieldName.' '.$fieldTypes[$fieldObject->get('column')];
+			$columnsListQuery .= ','.$fieldName.' '.$fieldTypes[$fieldObject->get('column')];
         }
         
         return $columnsListQuery;
@@ -149,11 +158,22 @@ class Import_FileReader_Reader {
             $result = $db->pquery("DESC $table", array());
             if ($result && $db->num_rows($result) > 0) {
                 while ($row = $db->fetch_array($result)) {
-                    $fieldTypes[$row['field']] = htmlspecialchars_decode( $row['type'], ENT_QUOTES );
+                    $fieldTypes[$row['Field']] = htmlspecialchars_decode( $row['Type'], ENT_QUOTES );
                 }
             }
         }
-        return $fieldTypes;
+
+		if($this->moduleModel->isInventory()){
+			$tableName = $this->moduleModel->get('name');
+			$result = $db->pquery('DESC vtiger_'.lcfirst($tableName).'_inventory');
+			if ($result && $db->getRowCount($result) > 0) {
+				while ($row = $db->fetch_array($result)) {
+                    $fieldTypes[$row['Field']] = htmlspecialchars_decode( $row['Type'], ENT_QUOTES );
+                }
+				
+			}
+		}
+
+		return $fieldTypes;
     }
 }
-?>
