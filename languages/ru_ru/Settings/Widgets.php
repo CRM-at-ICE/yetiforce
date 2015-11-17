@@ -10,7 +10,7 @@
  * VERSION YetiForceCRM: 1.1.0 RC
  * *********************************************************************************************************************************** */
 $languageStrings = [
-	'Widgets' => 'Виджеты',
+	'Widgets' => 'Modules – Widgets',
 	'LBL_MODULE_DESC' => 'Модуль управления Виджетами',
 	'Add widget' => 'Добавить Виджет',
 	'Type widget' => 'Тип',
@@ -54,6 +54,9 @@ $languageStrings = [
 	'None' => 'Нет',
 	'ProductsServices' => 'Products services',
 	'Campaign status' => 'Campaign status',
+	'Select button info' => 'Enable visible select button',
+	'LBL_CONDITION' => 'Condition',
+	'LBL_CONDITION_INFO' => 'Select condition for showing records',
 ];
 $jsLanguageStrings = [
 	'Loading data' => 'Загрузка...',

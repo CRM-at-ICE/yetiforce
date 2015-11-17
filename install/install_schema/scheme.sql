@@ -40,6 +40,72 @@ CREATE TABLE `a_yf_inventory_limits` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/*Table structure for table `a_yf_mapped_config` */
+
+CREATE TABLE `a_yf_mapped_config` (
+  `id` int(19) NOT NULL AUTO_INCREMENT,
+  `tabid` int(19) DEFAULT NULL,
+  `reltabid` int(19) DEFAULT NULL,
+  `status` set('active','inactive') DEFAULT NULL,
+  `conditions` text,
+  `permissions` varchar(255) DEFAULT NULL,
+  `params` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `a_yf_mapped_fields` */
+
+CREATE TABLE `a_yf_mapped_fields` (
+  `id` int(19) NOT NULL AUTO_INCREMENT,
+  `mappedid` int(19) DEFAULT NULL,
+  `type` varchar(30) DEFAULT NULL,
+  `source` varchar(30) DEFAULT NULL,
+  `target` varchar(30) DEFAULT NULL,
+  `default` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `a_yf_mapped_fields_ibfk_1` (`mappedid`),
+  CONSTRAINT `a_yf_mapped_fields_ibfk_1` FOREIGN KEY (`mappedid`) REFERENCES `a_yf_mapped_config` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `a_yf_pdf` */
+
+CREATE TABLE `a_yf_pdf` (
+  `pdfid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id of record',
+  `module_name` varchar(25) NOT NULL COMMENT 'name of the module',
+  `header_content` text NOT NULL,
+  `body_content` text NOT NULL,
+  `footer_content` text NOT NULL,
+  `status` set('active','inactive') NOT NULL,
+  `primary_name` varchar(255) NOT NULL,
+  `secondary_name` varchar(255) NOT NULL,
+  `meta_author` varchar(255) NOT NULL,
+  `meta_creator` varchar(255) NOT NULL,
+  `meta_keywords` varchar(255) NOT NULL,
+  `metatags_status` tinyint(1) NOT NULL,
+  `meta_subject` varchar(255) NOT NULL,
+  `meta_title` varchar(255) NOT NULL,
+  `page_format` varchar(255) NOT NULL,
+  `margin_chkbox` tinyint(1) DEFAULT NULL,
+  `margin_top` smallint(2) unsigned NOT NULL,
+  `margin_bottom` smallint(2) unsigned NOT NULL,
+  `margin_left` smallint(2) unsigned NOT NULL,
+  `margin_right` smallint(2) unsigned NOT NULL,
+  `page_orientation` set('PLL_PORTRAIT','PLL_LANDSCAPE') NOT NULL,
+  `language` varchar(7) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `visibility` set('PLL_LISTVIEW','PLL_DETAILVIEW') NOT NULL,
+  `default` tinyint(1) DEFAULT NULL,
+  `conditions` text NOT NULL,
+  `watermark_type` set('text','image') NOT NULL,
+  `watermark_text` varchar(255) NOT NULL,
+  `watermark_size` tinyint(2) unsigned NOT NULL,
+  `watermark_angle` smallint(3) unsigned NOT NULL,
+  `watermark_image` varchar(255) NOT NULL,
+  `template_members` varchar(255) NOT NULL,
+  PRIMARY KEY (`pdfid`),
+  KEY `module_name` (`module_name`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*Table structure for table `a_yf_taxes_config` */
 
 CREATE TABLE `a_yf_taxes_config` (
@@ -4081,9 +4147,15 @@ CREATE TABLE `vtiger_organizationdetails` (
   `phone` varchar(30) DEFAULT NULL,
   `fax` varchar(30) DEFAULT NULL,
   `website` varchar(100) DEFAULT NULL,
+  `panellogoname` varchar(50) DEFAULT NULL,
+  `height_panellogo` smallint(3) DEFAULT NULL,
+  `panellogo` text,
   `logoname` varchar(50) DEFAULT NULL,
   `logo` text,
-  `vatid` varchar(100) DEFAULT NULL,
+  `vatid` varchar(30) DEFAULT NULL,
+  `id1` varchar(30) DEFAULT NULL,
+  `id2` varchar(30) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`organization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -6693,6 +6765,7 @@ CREATE TABLE `vtiger_settings_blocks` (
   `blockid` int(19) NOT NULL,
   `label` varchar(250) DEFAULT NULL,
   `sequence` int(19) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`blockid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

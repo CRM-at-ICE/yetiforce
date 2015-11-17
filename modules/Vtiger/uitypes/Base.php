@@ -41,7 +41,7 @@ class Vtiger_Base_UIType extends Vtiger_Base_Model
 	 * @param <Object> $value
 	 * @return <Object>
 	 */
-	public function getUserRequestValue($value)
+	public function getUserRequestValue($value, $recordId)
 	{
 		return $value;
 	}
@@ -51,7 +51,7 @@ class Vtiger_Base_UIType extends Vtiger_Base_Model
 	 * @param <Object> $value
 	 * @return <Object>
 	 */
-	public function getDisplayValue($value, $record = false, $recordInstance = false)
+	public function getDisplayValue($value, $record = false, $recordInstance = false, $rawText = false)
 	{
 		return $value;
 	}

@@ -162,7 +162,7 @@ class Vtiger_Module_Model extends Vtiger_Module
 	 * Function to save a given record model of the current module
 	 * @param Vtiger_Record_Model $recordModel
 	 */
-	public function saveRecord($recordModel)
+	public function saveRecord(Vtiger_Record_Model $recordModel)
 	{
 		$moduleName = $this->get('name');
 		$focus = CRMEntity::getInstance($moduleName);
@@ -1544,7 +1544,8 @@ class Vtiger_Module_Model extends Vtiger_Module
 			$queryGenerator = new QueryGenerator($relatedModuleName, $currentUser);
 			$queryGenerator->setFields($relatedListFields);
 			$selectColumnSql = $queryGenerator->getSelectClauseColumnSQL();
-			$newQuery = spliti('FROM', $query);
+			$query = str_replace('FROM', 'from', $query); 
+			$newQuery = explode('from', $query);
 			$selectColumnSql = 'SELECT DISTINCT vtiger_crmentity.crmid,' . $selectColumnSql;
 			$query = $selectColumnSql . ' FROM ' . $newQuery[1];
 		}
@@ -1745,7 +1746,7 @@ class Vtiger_Module_Model extends Vtiger_Module
 				if ($fieldModel->getFieldDataType() == Vtiger_Field_Model::REFERENCE_TYPE) {
 					$referenceList = $fieldModel->getReferenceList();
 					foreach ($referenceList as $referenceModule) {
-						if (isset($fieldMap[$referenceModule])) {
+						if (isset($fieldMap[$referenceModule]) && $sourceModule != $referenceModule) {
 							$fieldValue = $recordModel->get($fieldName);
 							if ($fieldValue != 0 && Vtiger_Functions::getCRMRecordType($fieldValue) == $referenceModule)
 								$data[$fieldMap[$referenceModule]] = $fieldValue;

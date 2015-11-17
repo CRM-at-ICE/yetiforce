@@ -44,13 +44,16 @@ class Vtiger_Reference_UIType extends Vtiger_Base_UIType
 	 * @param <Integer> crmid of record
 	 * @return <String>
 	 */
-	public function getDisplayValue($value)
+	public function getDisplayValue($value, $record = false, $recordInstance = false, $rawText = false)
 	{
 		$referenceModule = $this->getReferenceModule($value);
 		if ($referenceModule && !empty($value)) {
 			$referenceModuleName = $referenceModule->get('name');
 			$entityNames = getEntityName($referenceModuleName, [$value]);
 			$name = Vtiger_Functions::textLength($entityNames[$value], vglobal('href_max_length'));
+			if ($rawText || $referenceModuleName == 'Users') {
+				return $name;
+			}
 			$linkValue = "<a class='moduleColor_$referenceModuleName' href='index.php?module=$referenceModuleName&view=" . $referenceModule->getDetailViewName() . "&record=$value' title='" . vtranslate($referenceModuleName, $referenceModuleName) . "'>$name</a>";
 			return $linkValue;
 		}
