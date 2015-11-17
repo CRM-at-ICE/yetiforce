@@ -1,6 +1,6 @@
 /*
-SQLyog Ultimate v11.5 (64 bit)
-MySQL - 5.6.17 : Database - lab_rs
+SQLyog Ultimate v12.12 (64 bit)
+MySQL - 5.6.17 : Database - yetiforce
 *********************************************************************
 */
 
@@ -624,29 +624,6 @@ CREATE TABLE `s_yf_multireference` (
   `lastid` int(19) unsigned NOT NULL DEFAULT '0',
   `type` tinyint(1) NOT NULL DEFAULT '0',
   KEY `source_module` (`source_module`,`dest_module`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `u_yf_squoteenquiries` */
-
-CREATE TABLE `u_yf_squoteenquiries` (
-  `squoteenquiriesid` int(19) NOT NULL DEFAULT '0',
-  `subject` varchar(255) DEFAULT NULL,
-  `potentialid` int(19) DEFAULT NULL,
-  `squoteenquiries_no` varchar(255) DEFAULT '',
-  `squoteenquiries_status` varchar(255) DEFAULT NULL,
-  `accountid` int(19) DEFAULT NULL,
-  PRIMARY KEY (`squoteenquiriesid`),
-  KEY `potentialid` (`potentialid`),
-  KEY `accountid` (`accountid`),
-  CONSTRAINT `fk_1_u_yf_squoteenquiries` FOREIGN KEY (`squoteenquiriesid`) REFERENCES `vtiger_crmentity` (`crmid`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Table structure for table `u_yf_squoteenquiriescf` */
-
-CREATE TABLE `u_yf_squoteenquiriescf` (
-  `squoteenquiriesid` int(19) NOT NULL,
-  PRIMARY KEY (`squoteenquiriesid`),
-  CONSTRAINT `fk_1_u_yf_squoteenquiriescf` FOREIGN KEY (`squoteenquiriesid`) REFERENCES `vtiger_crmentity` (`crmid`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `vtiger_account` */
@@ -2299,7 +2276,7 @@ CREATE TABLE `vtiger_def_org_share` (
   PRIMARY KEY (`ruleid`),
   KEY `fk_1_vtiger_def_org_share` (`permission`),
   CONSTRAINT `fk_1_vtiger_def_org_share` FOREIGN KEY (`permission`) REFERENCES `vtiger_org_share_action_mapping` (`share_action_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `vtiger_def_org_share_seq` */
 
@@ -2681,7 +2658,7 @@ CREATE TABLE `vtiger_field` (
   KEY `field_displaytype_idx` (`displaytype`),
   KEY `tabid` (`tabid`,`tablename`),
   CONSTRAINT `fk_1_vtiger_field` FOREIGN KEY (`tabid`) REFERENCES `vtiger_tab` (`tabid`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1777 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1765 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `vtiger_field_seq` */
 
@@ -6864,16 +6841,6 @@ CREATE TABLE `vtiger_sostatushistory` (
   CONSTRAINT `fk_1_vtiger_sostatushistory` FOREIGN KEY (`salesorderid`) REFERENCES `vtiger_salesorder` (`salesorderid`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Table structure for table `vtiger_squoteenquiries_status` */
-
-CREATE TABLE `vtiger_squoteenquiries_status` (
-  `squoteenquiries_statusid` int(11) NOT NULL AUTO_INCREMENT,
-  `squoteenquiries_status` varchar(200) NOT NULL,
-  `sortorderid` int(11) DEFAULT NULL,
-  `presence` int(11) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`squoteenquiries_statusid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
 /*Table structure for table `vtiger_ssservicesstatus` */
 
 CREATE TABLE `vtiger_ssservicesstatus` (
@@ -7698,7 +7665,7 @@ CREATE TABLE `vtiger_widgets` (
   PRIMARY KEY (`id`),
   KEY `tabid` (`tabid`),
   CONSTRAINT `vtiger_widgets_ibfk_1` FOREIGN KEY (`tabid`) REFERENCES `vtiger_tab` (`tabid`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `vtiger_ws_entity` */
 
@@ -7709,7 +7676,7 @@ CREATE TABLE `vtiger_ws_entity` (
   `handler_class` varchar(64) NOT NULL,
   `ismodule` int(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `vtiger_ws_entity_fieldtype` */
 
